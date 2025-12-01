@@ -6,6 +6,7 @@
 
 # Ignore bundler config.
 /.bundle
+/vendor/bundle
 
 # Ignore all environment files.
 /.env*
@@ -19,6 +20,7 @@
 /tmp/*
 !/log/.keep
 !/tmp/.keep
+.byebug_history
 
 # Ignore pidfiles, but keep the directory.
 /tmp/pids/*
@@ -26,6 +28,7 @@
 
 # Ignore storage (uploaded files in development and any SQLite databases).
 /storage/*
+/coverage/*
 !/storage/.keep
 /tmp/storage/*
 !/tmp/storage/.keep
@@ -43,3 +46,9 @@
 # Ignore Docker-related files
 /.dockerignore
 /Dockerfile*
+
+# Ignore node modules
+/node_modules
+
+# Ignore DS_Store files
+.DS_Store
