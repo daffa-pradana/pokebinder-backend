@@ -20,9 +20,10 @@ services:
   web:
     build:
       context: .
-    command: bin/rails server -b 0.0.0.0 -p 3000
+      dockerfile: Dockerfile.dev
+    command: bash -c "bundle exec rails server -b 0.0.0.0 -p 3000"
     volumes:
-      - .:/rails:cached
+      - .:/app:cached
     ports:
       - "3000:3000"
     environment:
