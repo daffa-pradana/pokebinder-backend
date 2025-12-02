@@ -32,6 +32,8 @@
 !/storage/.keep
 /tmp/storage/*
 !/tmp/storage/.keep
+public/packs
+public/packs-test
 
 # Ignore CI service files.
 /.github
