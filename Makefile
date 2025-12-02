@@ -1,19 +1,18 @@
-.PHONY: up down sh logs console build
-
 up:
 	docker compose up --build
 
 down:
 	docker compose down
 
-sh:
+bash:
 	docker compose exec web bash
-
-console:
-	docker compose exec web bin/rails console
 
 logs:
 	docker compose logs -f web
 
-build:
-	docker compose build
+db:
+	docker compose exec web bundle exec rails db:create db:migrate
+
+reset-db:
+	docker compose down -v
+	docker compose up --build
