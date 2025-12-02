@@ -4,9 +4,9 @@ services:
   db:
     image: postgres:15
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: pokebinder_development
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: ${POSTGRES_DB:-pokebinder_development}
     ports:
       - "5432:5432"
     volumes:
@@ -28,8 +28,8 @@ services:
       - "3000:3000"
     environment:
       RAILS_ENV: development
-      DATABASE_URL: postgres://postgres:password@db:5432/pokebinder_development
-      REDIS_URL: redis://redis:6379/0
+      DATABASE_URL: ${DATABASE_URL:-postgres://postgres:password@db:5432/pokebinder_development}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
     depends_on:
       - db
       - redis
