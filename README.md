@@ -3,7 +3,7 @@
 **Quickstart (development, Docker)**
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/daffa-pradana/pokebinder-backend.git
 cd pokebinder-backend
 # copy .env.example -> .env and edit if needed
 make up
