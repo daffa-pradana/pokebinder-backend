@@ -8,9 +8,13 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   # root "posts#index"
 
+  # Authentication
+  post "/auth/sign_in", to: "auth/sessions#create"
+  delete "/auth/sign_out", to: "auth/sessions#destroy"
+
   namespace :api do
     namespace :v1 do
-      resources :users, only: [:create, :show]
+      resources :users, only: [ :create, :show, :update, :destroy ]
     end
   end
 end
