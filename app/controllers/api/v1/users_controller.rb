@@ -2,6 +2,7 @@ module Api
   module V1
     class UsersController < ApplicationController
       skip_before_action :authenticate_request!, only: [ :create ]
+      before_action :authorize_user!, only: [ :show, :update, :destroy ]
 
       def create
         user = User.new(user_params)
@@ -13,12 +14,10 @@ module Api
       end
 
       def show
-        authorize_user!
         render json: { user: @user.as_json(only: [ :id, :name, :email ]) }
       end
 
       def update
-        authorize_user!
         if @user.update(user_update_params)
           render json: { user: @user.as_json(only: [ :id, :name, :email ]) }
         else
@@ -27,7 +26,6 @@ module Api
       end
 
       def destroy
-        authorize_user!
         @user.destroy!
         head :no_content
       end
@@ -44,7 +42,9 @@ module Api
 
       def authorize_user!
         @user = User.find(params[:id])
-        render json: { error: "Forbidden" }, status: :forbidden unless @user == current_user
+        unless @user == current_user
+          render json: { error: "Forbidden" }, status: :forbidden
+        end
       end
     end
   end
