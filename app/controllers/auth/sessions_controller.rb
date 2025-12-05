@@ -12,7 +12,7 @@ module Auth
           access_expires_at: Time.at(payload[:exp]).iso8601,
           refresh_token: refresh.token,
           refresh_expires_at: refresh.expires_at.iso8601,
-          user: user.as_json(only: [:id, :name, :email])
+          user: user.as_json(only: [ :id, :name, :email ])
         }
       else
         render json: { error: "Invalid email or password" }, status: :unauthorized
