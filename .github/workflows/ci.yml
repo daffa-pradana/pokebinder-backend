@@ -1,6 +1,10 @@
 name: CI
 
-on: [push, pull_request]
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
 
 jobs:
   test:
@@ -8,35 +12,46 @@ jobs:
     services:
       postgres:
         image: postgres:15
+        ports:
+          - 5432:5432
         env:
-          POSTGRES_DB: pokebinder_test
+          POSTGRES_DB: pokebinder_backend_test
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: password
-        ports: ['5432:5432']
         options: >-
-          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+          --health-cmd="pg_isready -U postgres" 
+          --health-interval=10s 
+          --health-timeout=5s 
+          --health-retries=5
+
+    env:
+      RAILS_ENV: test
+      DATABASE_URL: "postgres://postgres:password@localhost:5432/test_db"
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.3
+          ruby-version: '3.3'
+          bundler-cache: true
 
       - name: Install dependencies
         run: |
-          gem install bundler
-          bundle install --jobs 4 --retry 3
+          sudo apt-get update
+          sudo apt-get install -y libpq-dev
 
-      - name: Setup DB
-        env:
-          DATABASE_URL: postgres://postgres:password@localhost:5432/pokebinder_test
+      - name: Setup database
         run: |
-          bundle exec rails db:create db:migrate RAILS_ENV=test
+          bin/rails db:create
+          bin/rails db:migrate
 
       - name: Run RuboCop
-        run: bundle exec rubocop || true
+        run: |
+          bundle exec rubocop --parallel
 
-      - name: Run RSpec
-        run: bundle exec rspec
+      - name: Run RSpec tests
+        run: |
+          bundle exec rspec --format documentation
