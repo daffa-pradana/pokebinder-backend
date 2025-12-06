@@ -12,7 +12,7 @@ make db     # create & migrate DB inside the container
 # open http://localhost:3000
 ```
 
-**Helpful make targets**
+**Helpful make commands**
 
 - `make up` — start services (build images if needed)
 - `make down` — stop containers
@@ -20,9 +20,7 @@ make db     # create & migrate DB inside the container
 - `make logs` — stream logs
 - `make db` — run `rails db:create db:migrate` inside container
 
-**ENV file example**
-
-`.env.example`
+**`.env.example`**
 ```env
 # Database
 POSTGRES_USER=postgres
