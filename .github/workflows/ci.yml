@@ -1,39 +1,58 @@
 name: CI
 
 on:
-  push:
-    branches: [ main ]
   pull_request:
-    branches: [ main ]
+    branches: [ develop, main ]
+  push:
+    branches: [ develop ]
 
 jobs:
-  test:
+  rubocop:
+    name: RuboCop Lint
     runs-on: ubuntu-latest
-
-    services:
-      postgres:
-        image: postgres:15
-        ports: ['5432:5432']
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: password
-          POSTGRES_DB: pokebinder_test
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
 
     steps:
       - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.3
-      - name: Install dependencies
+          ruby-version: 3.3 # update if needed
+          bundler-cache: true
+      - name: Run RuboCop
+        run: bundle exec rubocop
+
+  rspec:
+    name: RSpec Tests
+    needs: rubocop # <-- ensures lint runs first
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd="pg_isready"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    env:
+      RAILS_ENV: test
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/test
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.3 # update if needed
+          bundler-cache: true
+
+      - name: Set up DB schema
         run: |
-          gem install bundler
-          bundle install --jobs 4 --retry 3
-      - name: Run tests
-        run: |
-          bundle exec rails db:create db:migrate RAILS_ENV=test
-          bundle exec rails test
+          bundle exec rails db:create
+          bundle exec rails db:schema:load
+
+      - name: Run RSpec
+        run: bundle exec rspec
